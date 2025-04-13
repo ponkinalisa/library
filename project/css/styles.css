@@ -1,0 +1,162 @@
+/* Основные стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Общие стили для body */
+body {
+    background-color: #f4f7fc;
+    color: #333;
+    padding: 20px;
+    font-size: 16px;
+}
+
+/* Заголовки */
+h2, h3 {
+    color: #4CAF50;
+    margin-bottom: 20px;
+}
+
+/* Контейнер для всех страниц */
+#login-form, #register-form, #book-list, #book-form, #book-view {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для форм */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Стили для полей ввода */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select,
+input[type="file"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+    width: 100%;
+}
+
+/* Фокус на полях ввода */
+input:focus, select:focus, textarea:focus {
+    border-color: #4CAF50;
+}
+
+/* Стили для кнопок */
+button {
+    padding: 12px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Эффект при наведении на кнопки */
+button:hover {
+    background-color: #45a049;
+}
+
+/* Ошибки */
+#login-error, #register-error {
+    color: red;
+    font-size: 14px;
+}
+
+/* Стиль для таблицы с книгами */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #f2f2f2;
+}
+
+/* Стиль для ссылок */
+a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Стили для миниатюр */
+img {
+    border-radius: 5px;
+}
+
+/* Стили для пагинации */
+button {
+    margin: 10px 5px;
+    font-size: 14px;
+}
+
+/* Стиль для страницы книги */
+#book-view img {
+    width: 150px;
+    margin-bottom: 20px;
+}
+
+/* Стили для страницы с ошибкой */
+#book-list, #book-view, #book-form {
+    display: block;
+}
+
+/* Стиль для страницы добавления/редактирования книги */
+#book-form h2 {
+    text-align: center;
+}
+
+/* Стили для контейнера книги */
+#book-list table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#book-list td {
+    padding: 10px;
+}
+
+#book-list td img {
+    max-width: 50px;
+    max-height: 75px;
+}
+
+#book-list td a {
+    color: #4CAF50;
+    margin: 5px;
+}
+
+/* Стиль для кнопок в списке книг */
+#book-list td a:hover {
+    text-decoration: underline;
+}

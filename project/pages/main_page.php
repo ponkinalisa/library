@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Личная библиотека</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Подключение стилей -->
+    <link rel="stylesheet" href="../css/styles.css"> <!-- Подключение стилей -->
 </head>
 <body>
    
@@ -54,7 +54,7 @@
         <!-- Форма добавления/редактирования книги -->
         <div id="book-form" class="section" style="display: none;">
             <h2>Добавить/Редактировать книгу</h2>
-            <form action="/book/save" method="POST" enctype="multipart/form-data">
+            <form action="#" method="POST" enctype="multipart/form-data">
                 <label for="title">Название книги:</label>
                 <input type="text" id="title" name="title" required maxlength="100">
 

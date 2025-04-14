@@ -41,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                     $_SESSION['id'] = $res['id'];
+                    $_SESSION['book'] = 0;
                     header('Location: main_page.php');
                 }
             }

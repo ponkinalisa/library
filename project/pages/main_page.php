@@ -1,3 +1,33 @@
+<?php 
+session_start();
+if (!isset($_SESSION['id'])){
+    header('Location: registr.php');
+}
+else{
+    include('../php/config.php');
+
+    $sql = 'SELECT * FROM books WHERE user_id = :id';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['id'=> $_SESSION['id']]);
+    $result = $stmt->fetchAll();
+    $count = $_SESSION['book'];
+    if ($count >= count($result)){
+        $count = 0;
+    }else if ($count < 0){
+        $count = count($result) - 1;
+    }
+    $_SESSION['book'] = $count;
+    if (count($result) > 0){
+        $current = $result[$count];
+        $_SESSION['book_current_id'] = $current[0];
+    }
+   $width = getimagesize($current[6])[0];
+   $height = getimagesize($current[6])[1];
+
+   echo $_SESSION['book'];
+}
+?>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -5,6 +35,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Личная библиотека</title>
     <link rel="stylesheet" href="../css/styles.css"> <!-- Подключение стилей -->
+    <style> 
+#a{
+    text-decoration: none;
+    z-index: 5;
+    color: white;
+    font-size: 20px;
+}
+</style>
 </head>
 <body>
    
@@ -27,34 +65,61 @@
                 <tbody>
                     <!-- Книги будут отображаться здесь через серверный рендеринг -->
                     <tr>
-                        <td>Название книги</td>
-                        <td>Автор</td>
-                        <td>Год</td>
-                        <td>Жанр</td>
-                        <td><img src="bookfoto.jpg" alt="Обложка книги" width="50"></td>
-                        <td>45</td> <!-- Номер страницы, на которой остановился читатель -->
+                        <?php 
+                        if (isset($current)){
+                            echo('<td>'.$current[2].'</td>');
+                            echo('<td>'.$current[3].'</td>');
+                            echo('<td>'.$current[5].'</td>');
+                            if ($current[8] == 'fiction'){
+                                echo('<td>Фантастика</td>');
+                            }else if ($current[8] == 'non-fiction'){
+                                echo('<td>Нон-фикшн</td>');
+                            }else if ($current[8] == 'mystery'){
+                                echo('<td>Детектив</td>');
+                            }
+                            $height1 = $height;
+                            $width1 = $width;
+                            if ($width1 > 70){
+                                $height1 = (int)($height1 / ($width1 / 70));
+                                $width1 = 70;
+                            }
+                            else if ($height1 > 70){
+                                $width1 = (int)($width1 / ($height1 / 70));
+                                $height1 = 70;
+                            }
+                            echo('<td><img src="'.$current[6].'" alt="Обложка книги" width="'.$width1.' px" height="'.$height1.' px"></td>');
+                            echo('<td>'.$current[4].'</td>');
+                        }else{
+                        echo('<td>Название книги</td>');
+                        echo('<td>Автор</td>');
+                        echo('<td>Год</td>');
+                        echo('<td>Жанр</td>');
+                        echo('<td><img src="bookfoto.jpg" alt="Обложка книги" width="50"></td>');
+                        echo('<td>45</td>');
+                        }
+                        ?>
                         <td>
-                            <a href="/book/view">Просмотреть</a> |
-                            <a href="/book/edit">Редактировать</a> |
-                            <a href="/book/delete" onclick="return confirm('Удалить книгу?')">Удалить</a>
+                            <a href="#" onclick="see_book1()">Просмотреть</a>
+                            <a href="#" onclick="edit_book1()">Редактировать</a>
+                            <a href="../php/delete_book.php" onclick="return confirm('Удалить книгу?')">Удалить</a>
                         </td>
                     </tr>
                     <!-- Пагинация -->
                     <tr>
                         <td colspan="7">
-                            <button>Предыдущая</button>
-                            <button>Следующая</button>
+                        <a href='../php/previous.php' id='a'><button>Предыдущая</button></a>
+                        <a href='../php/next_page.php' id='a'><button>Следующая</button></a>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <a href="/book/add">Добавить книгу</a>
+            <a href="#" onclick="add_book1()">Добавить книгу</a>
         </div>
 
-        <!-- Форма добавления/редактирования книги -->
+        <!-- Форма добавления книги -->
         <div id="book-form" class="section" style="display: none;">
-            <h2>Добавить/Редактировать книгу</h2>
-            <form action="#" method="POST" enctype="multipart/form-data">
+            <h2>Добавить книгу</h2>
+            <form action="../php/add_book.php" method="POST" enctype="multipart/form-data">
                 <label for="title">Название книги:</label>
                 <input type="text" id="title" name="title" required maxlength="100">
 
@@ -79,7 +144,41 @@
                 <input type="file" id="cover" name="cover" accept="image/jpeg">
 
                 <label for="page-number">Номер страницы:</label>
-                <input type="number" id="page-number" name="page-number" min="1">
+                <input type="number" id="page-number" name="page" min="1" required>
+
+                <button type="submit">Сохранить</button>
+            </form>
+        </div>
+
+         <!-- Форма редактирования книги -->
+         <div id="book-form" class="section edit" style="display: none;">
+            <h2>Редактировать книгу</h2>
+            <form action="../php/edit.php" method="POST" enctype="multipart/form-data">
+                <label for="title">Название книги:</label>
+                <input type="text" id="title" name="title" required maxlength="100">
+
+                <label for="author">Автор:</label>
+                <input type="text" id="author" name="author" required maxlength="100">
+
+                <label for="genre">Жанр:</label>
+                <select id="genre" name="genre" required>
+                    <option value="fiction">Фантастика</option>
+                    <option value="non-fiction">Нон-фикшн</option>
+                    <option value="mystery">Детектив</option>
+                    <!-- Другие жанры -->
+                </select>
+
+                <label for="year">Год издания:</label>
+                <input type="number" id="year" name="year" required min="1800" max="2025">
+
+                <label for="description">Описание:</label>
+                <textarea id="description" name="description" maxlength="500"></textarea>
+
+                <label for="cover">Обложка книги (jpg, до 3 МБ):</label>
+                <input type="file" id="cover" name="cover" accept="image/jpeg">
+
+                <label for="page-number">Номер страницы:</label>
+                <input type="number" id="page-number" name="page" min="1" required>
 
                 <button type="submit">Сохранить</button>
             </form>
@@ -88,17 +187,66 @@
         <!-- Просмотр книги -->
         <div id="book-view" class="section" style="display: none;">
             <h2>Просмотр книги</h2>
-            <h3>Название книги</h3>
-            <p>Автор: Автор книги</p>
-            <p>Год издания: Год</p>
-            <p>Жанр: Жанр</p>
-            <img src="cover.jpg" alt="Обложка книги" width="100">
-            <p>Описание книги...</p>
-            <p>Номер страницы: <span id="current-page">45</span></p> <!-- Здесь выводится текущий номер страницы -->
-            <a href="/book/edit">Редактировать</a> |
-            <a href="/book/delete" onclick="return confirm('Удалить книгу?')">Удалить</a>
+            <?php 
+            if (isset($current)){
+                echo('<h3>'.$current[2].'</h3>');
+                echo('<p>Автор: '.$current[3].'</p>');
+                echo('<p> Год издания: '.$current[5].'</p>');
+                if ($current[8] == 'fiction'){
+                    echo('<p>Жанр: Фантастика</p>');
+                }else if ($current[8] == 'non-fiction'){
+                    echo('<p>Жанр: Нон-фикшн</p>');
+                }else if ($current[8] == 'mystery'){
+                    echo('<p>Жанр: Детектив</p>');
+                }
+                if ($width > 200){
+                    $height = (int)($height / ($width / 200));
+                    $width = 200;
+                }
+                else if ($height > 200){
+                    $width = (int)($width / ($height / 200));
+                    $height = 200;
+                }
+                echo('<p>Описание книги: '.$current[7].'</p>');
+                echo('<p><img src="'.$current[6].'" alt="Обложка книги" width="'.$width.'" height="'.$height.'"></p>');
+                echo('<p>Номер страницы: <span id="current-page">'.$current[4].'</span></p>');
+            }else{
+                echo('<h3>Название книги</h3>');
+                echo('<p>Автор: Автор книги</p>');
+                echo('<p>Год издания: Год</p>');
+                echo('<p>Жанр: Жанр</p>');
+                echo('<p>Описание книги...</p>');
+                echo('<p><img src="bookfoto.jpg" alt="Обложка книги" width="100"></p>');
+                echo('<p>Номер страницы: <span id="current-page">45</span></p>');
+            }
+            ?>
+            <a href='#' onclick="edit_book1()">Редактировать</a> |
+            <a href="../php/delete_book.php" onclick="return confirm('Удалить книгу?')">Удалить</a>
         </div>
     </div>
+    <script>
+        const see_book = document.getElementById('book-view');
+        const add_book = document.getElementById('book-form');
+        const edit_book = document.getElementsByClassName('edit')[0];
+
+        function add_book1(){
+            see_book.style.display = 'none';
+            edit_book.style.display = 'none';
+            add_book.style.display = 'block';
+        }
+
+        function edit_book1(){
+            see_book.style.display = 'none';
+            edit_book.style.display = 'block';
+            add_book.style.display = 'none';
+        }
+
+        function see_book1(){
+            see_book.style.display = 'block';
+            edit_book.style.display = 'none';
+            add_book.style.display = 'none';
+        }
+    </script>
 
 </body>
 </html>

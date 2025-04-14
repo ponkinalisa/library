@@ -1,8 +1,8 @@
 <?php 
-start_session();
-if (isset($_session['id'])){
-    header('Location: project/main_page.php');
-}else{
-    header('Location: project/registr.php');
+session_start();
+if (isset($_SESSION['id'])){
+    header('Location: project/pages/main_page.php');
+} else{
+    header('Location: project/pages/registr.php');
 }
 ?>

@@ -1,4 +1,5 @@
 <?php 
-start_session();
+session_start();
 session_destroy();
+echo('Вы успешно вышли из аккаунта');
 ?>

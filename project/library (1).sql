@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost:3306
--- Время создания: Апр 13 2025 г., 10:15
+-- Время создания: Апр 14 2025 г., 14:11
 -- Версия сервера: 5.7.24
 -- Версия PHP: 8.3.1
 
@@ -31,11 +31,21 @@ CREATE TABLE `books` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `name` text NOT NULL,
-  `autor` text NOT NULL,
+  `author` text NOT NULL,
   `count_pages` int(11) NOT NULL,
   `year` int(11) NOT NULL,
-  `path_to_img` varchar(255) NOT NULL
+  `path_to_img` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `genre` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `books`
+--
+
+INSERT INTO `books` (`id`, `user_id`, `name`, `author`, `count_pages`, `year`, `path_to_img`, `description`, `genre`) VALUES
+(6, 3, 'Altai State University', 'ponkina', 34, 2025, '../user_img/pupa@gmail.com/3116253706.jpg', 'dassadsa', 'fiction'),
+(7, 3, 'Тест по дисциплине \"электротехника2\"', 'тургенев', 212, 2021, '../user_img/pupa@gmail.com/5342694686.jpg', 'ASSDASAD', 'fiction');
 
 -- --------------------------------------------------------
 
@@ -55,7 +65,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `email`, `password`) VALUES
 (1, 'vova.pupkin@yandex.ru', '$2y$10$cxXLVq4MOuSqtb5/DN4a.OGO.zE3thaZcR2i2yWBt7OPE4uKCXhxG'),
-(2, 'elisaveta.ponkina@yandex.ru', '$2y$10$GUeMMvbrjVs31Yr0XYKdouSjD5bkbOpY3usqxaSA7SVmFUEcecDOq');
+(2, 'elisaveta.ponkina@yandex.ru', '$2y$10$GUeMMvbrjVs31Yr0XYKdouSjD5bkbOpY3usqxaSA7SVmFUEcecDOq'),
+(3, 'pupa@gmail.com', '$2y$10$KzZMcp4Zq3PfxRc9NCXVVOsrQntP6NW4QEpdC9PvRsBSzwM1hrVUa');
 
 --
 -- Индексы сохранённых таблиц
@@ -83,13 +94,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `books`
 --
 ALTER TABLE `books`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц

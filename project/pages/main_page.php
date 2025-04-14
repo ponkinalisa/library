@@ -23,8 +23,6 @@ else{
     }
    $width = getimagesize($current[6])[0];
    $height = getimagesize($current[6])[1];
-
-   echo $_SESSION['book'];
 }
 ?>
 

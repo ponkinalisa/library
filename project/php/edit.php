@@ -10,14 +10,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
         $year = trim($_POST['year']);
         $page = trim($_POST['page']);
         $description = trim($_POST['description']);
-        $path = '';
-        if (isset($_FILES['cover'])){
-            $sql = 'SELECT path_to_img FROM books WHERE id = :id';
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(['id'=> $_SESSION['book_current_id']]);
-            $img = $stmt->fetch(PDO::FETCH_ASSOC)['path_to_img'];
-            unlink($img);
-
+        $sql = 'SELECT path_to_img FROM books WHERE id = :id';
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['id'=> $_SESSION['book_current_id']]);
+        $path = $stmt->fetch(PDO::FETCH_ASSOC)['path_to_img'];
+        if (isset($_FILES['cover']) and is_uploaded_file($_FILES['cover']['tmp_name'])){
+            unlink($path);
             $file = $_FILES['cover'];
             $sql = 'SELECT email FROM users WHERE id = :id';
             $stmt = $pdo->prepare($sql);

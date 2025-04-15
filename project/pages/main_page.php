@@ -20,9 +20,13 @@ else{
     if (count($result) > 0){
         $current = $result[$count];
         $_SESSION['book_current_id'] = $current[0];
+        $width = getimagesize($current[6])[0];
+        $height = getimagesize($current[6])[1];
     }
-   $width = getimagesize($current[6])[0];
-   $height = getimagesize($current[6])[1];
+    if (!isset($width)){
+        $width = 200;
+        $height =  200;
+    }
 }
 ?>
 
@@ -40,10 +44,15 @@ else{
     color: white;
     font-size: 20px;
 }
+#logout{
+    position: absolute;
+    top: 0;
+    right: 0;
+}
 </style>
 </head>
 <body>
-   
+   <button id="logout" onclick="logout()">Выйти</button>
     <!-- Главная страница (список книг) -->
     <div id="main-content">
         <div id="book-list" class="section">
@@ -74,6 +83,8 @@ else{
                                 echo('<td>Нон-фикшн</td>');
                             }else if ($current[8] == 'mystery'){
                                 echo('<td>Детектив</td>');
+                            }else{
+                                echo('<td>Неизвестный жанр</td>');
                             }
                             $height1 = $height;
                             $width1 = $width;
@@ -85,7 +96,7 @@ else{
                                 $width1 = (int)($width1 / ($height1 / 70));
                                 $height1 = 70;
                             }
-                            echo('<td><img src="'.$current[6].'" alt="Обложка книги" width="'.$width1.' px" height="'.$height1.' px"></td>');
+                            echo('<td><img src="../php/img1.php" alt="Обложка книги"></td>');
                             echo('<td>'.$current[4].'</td>');
                         }else{
                         echo('<td>Название книги</td>');
@@ -142,7 +153,7 @@ else{
                 <input type="file" id="cover" name="cover" accept="image/jpeg">
 
                 <label for="page-number">Номер страницы:</label>
-                <input type="number" id="page-number" name="page" min="1" required>
+                <input type="number" id="page-number" name="page" min="0" value="0" required>
 
                 <button type="submit">Сохранить</button>
             </form>
@@ -153,30 +164,30 @@ else{
             <h2>Редактировать книгу</h2>
             <form action="../php/edit.php" method="POST" enctype="multipart/form-data">
                 <label for="title">Название книги:</label>
-                <input type="text" id="title" name="title" required maxlength="100">
+                <input type="text" id="title" name="title" required maxlength="100" value="<?php if (isset($current)){echo($current[2]);}?>">
 
                 <label for="author">Автор:</label>
-                <input type="text" id="author" name="author" required maxlength="100">
+                <input type="text" id="author" name="author" required maxlength="100" value="<?php if (isset($current)){echo($current[3]);}?>">
 
                 <label for="genre">Жанр:</label>
                 <select id="genre" name="genre" required>
-                    <option value="fiction">Фантастика</option>
-                    <option value="non-fiction">Нон-фикшн</option>
-                    <option value="mystery">Детектив</option>
+                    <option value="fiction" <?php if (isset($current) and $current[8] == 'fiction'){echo('selected');}?>>Фантастика</option>
+                    <option value="non-fiction" <?php if (isset($current) and $current[8] == 'non-fiction'){echo('selected');}?>>Нон-фикшн</option>
+                    <option value="mystery" <?php if (isset($current) and $current[8] == 'mystery'){echo('selected');}?>>Детектив</option>
                     <!-- Другие жанры -->
                 </select>
 
                 <label for="year">Год издания:</label>
-                <input type="number" id="year" name="year" required min="1800" max="2025">
+                <input type="number" id="year" name="year" required min="1800" max="2025" value="<?php if (isset($current)){echo($current[5]);}?>">
 
                 <label for="description">Описание:</label>
-                <textarea id="description" name="description" maxlength="500"></textarea>
+                <textarea id="description" name="description" maxlength="500"><?php if (isset($current)){echo($current[7]);}?></textarea>
 
                 <label for="cover">Обложка книги (jpg, до 3 МБ):</label>
                 <input type="file" id="cover" name="cover" accept="image/jpeg">
 
                 <label for="page-number">Номер страницы:</label>
-                <input type="number" id="page-number" name="page" min="1" required>
+                <input type="number" id="page-number" name="page" min="1" required value="<?php if (isset($current)){echo($current[4]);}?>">
 
                 <button type="submit">Сохранить</button>
             </form>
@@ -197,16 +208,8 @@ else{
                 }else if ($current[8] == 'mystery'){
                     echo('<p>Жанр: Детектив</p>');
                 }
-                if ($width > 200){
-                    $height = (int)($height / ($width / 200));
-                    $width = 200;
-                }
-                else if ($height > 200){
-                    $width = (int)($width / ($height / 200));
-                    $height = 200;
-                }
                 echo('<p>Описание книги: '.$current[7].'</p>');
-                echo('<p><img src="'.$current[6].'" alt="Обложка книги" width="'.$width.'" height="'.$height.'"></p>');
+                echo('<p><img src="../php/img.php" alt="Обложка книги"></p>');
                 echo('<p>Номер страницы: <span id="current-page">'.$current[4].'</span></p>');
             }else{
                 echo('<h3>Название книги</h3>');
@@ -243,6 +246,10 @@ else{
             see_book.style.display = 'block';
             edit_book.style.display = 'none';
             add_book.style.display = 'none';
+        }
+
+        function logout(){
+            window.location.href = '../php/logout.php';
         }
     </script>
 

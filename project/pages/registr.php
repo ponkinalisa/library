@@ -39,10 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $stmt = $pdo->prepare($sql);
                     $stmt->execute(['email' => $email]);
                     $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                    $_SESSION['id'] = $res['id'];
-                    $_SESSION['book'] = 0;
-                    header('Location: main_page.php');
+                    
+                    header('Location: index.php');
                 }
             }
             else{

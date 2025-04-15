@@ -1,5 +1,7 @@
 <?php 
 session_start();
+
+
 if (!isset($_SESSION['id'])){
     header('Location: registr.php');
 }
@@ -14,18 +16,20 @@ else{
     if ($count >= count($result)){
         $count = 0;
     }else if ($count < 0){
-        $count = count($result) - 1;
+        $count = count($result) - 5;
     }
     $_SESSION['book'] = $count;
     if (count($result) > 0){
-        $current = $result[$count];
-        $_SESSION['book_current_id'] = $current[0];
-        $width = getimagesize($current[6])[0];
-        $height = getimagesize($current[6])[1];
-    }
-    if (!isset($width)){
-        $width = 200;
-        $height =  200;
+        $sql = 'SELECT * FROM books WHERE user_id = :id LIMIT ' . $_SESSION['book'] . ', ' . ($_SESSION['book'] + 5);
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['id'=> $_SESSION['id']]);
+        $result = $stmt->fetchAll();
+        if ($_SESSION['book_current_id'] != -1){
+            $sql = 'SELECT * FROM books WHERE user_id = :id AND id = :id_self';
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(['id'=> $_SESSION['id'], 'id_self' => $_SESSION['book_current_id']]);
+            $main = $stmt->fetch();
+        } 
     }
 }
 ?>
@@ -70,6 +74,7 @@ else{
                     </tr>
                 </thead>
                 <tbody>
+                    <?php foreach ($result as $current): ?>
                     <!-- Книги будут отображаться здесь через серверный рендеринг -->
                     <tr>
                         <?php 
@@ -96,23 +101,24 @@ else{
                                 $width1 = (int)($width1 / ($height1 / 70));
                                 $height1 = 70;
                             }
-                            echo('<td><img src="../php/img1.php" alt="Обложка книги"></td>');
+                            echo('<td><img src="../php/img1.php?id='.$current[0].'" alt="Обложка книги"></td>');
                             echo('<td>'.$current[4].'</td>');
                         }else{
-                        echo('<td>Название книги</td>');
-                        echo('<td>Автор</td>');
-                        echo('<td>Год</td>');
-                        echo('<td>Жанр</td>');
-                        echo('<td><img src="bookfoto.jpg" alt="Обложка книги" width="50"></td>');
-                        echo('<td>45</td>');
+                            echo('<td>Название книги</td>');
+                            echo('<td>Автор</td>');
+                            echo('<td>Год</td>');
+                            echo('<td>Жанр</td>');
+                            echo('<td><img src="bookfoto.jpg" alt="Обложка книги" width="50"></td>');
+                            echo('<td>45</td>');
                         }
                         ?>
                         <td>
-                            <a href="#" onclick="see_book1()">Просмотреть</a>
-                            <a href="#" onclick="edit_book1()">Редактировать</a>
-                            <a href="../php/delete_book.php" onclick="return confirm('Удалить книгу?')">Удалить</a>
+                            <a href="new_id_book2.php?id=<?php echo($current[0]);?>">Просмотреть</a>
+                            <a href="new_id_book1.php?id=<?php echo($current[0]);?>">Редактировать</a>
+                            <a href="../php/delete_book.php?id=<?php echo($current[0]);?>" onclick="return confirm('Удалить книгу?')">Удалить</a>
                         </td>
                     </tr>
+                    <?php endforeach; ?>
                     <!-- Пагинация -->
                     <tr>
                         <td colspan="7">
@@ -164,30 +170,30 @@ else{
             <h2>Редактировать книгу</h2>
             <form action="../php/edit.php" method="POST" enctype="multipart/form-data">
                 <label for="title">Название книги:</label>
-                <input type="text" id="title" name="title" required maxlength="100" value="<?php if (isset($current)){echo($current[2]);}?>">
+                <input type="text" id="title" name="title" required maxlength="100" value="<?php if (isset($main)){echo($main[2]);}?>">
 
                 <label for="author">Автор:</label>
-                <input type="text" id="author" name="author" required maxlength="100" value="<?php if (isset($current)){echo($current[3]);}?>">
+                <input type="text" id="author" name="author" required maxlength="100" value="<?php if (isset($main)){echo($main[3]);}?>">
 
                 <label for="genre">Жанр:</label>
                 <select id="genre" name="genre" required>
-                    <option value="fiction" <?php if (isset($current) and $current[8] == 'fiction'){echo('selected');}?>>Фантастика</option>
-                    <option value="non-fiction" <?php if (isset($current) and $current[8] == 'non-fiction'){echo('selected');}?>>Нон-фикшн</option>
-                    <option value="mystery" <?php if (isset($current) and $current[8] == 'mystery'){echo('selected');}?>>Детектив</option>
+                    <option value="fiction" <?php if (isset($main) and $main[8] == 'fiction'){echo('selected');}?>>Фантастика</option>
+                    <option value="non-fiction" <?php if (isset($main) and $main[8] == 'non-fiction'){echo('selected');}?>>Нон-фикшн</option>
+                    <option value="mystery" <?php if (isset($main) and $main[8] == 'mystery'){echo('selected');}?>>Детектив</option>
                     <!-- Другие жанры -->
                 </select>
 
                 <label for="year">Год издания:</label>
-                <input type="number" id="year" name="year" required min="1800" max="2025" value="<?php if (isset($current)){echo($current[5]);}?>">
+                <input type="number" id="year" name="year" required min="1800" max="2025" value="<?php if (isset($main)){echo($main[5]);}?>">
 
                 <label for="description">Описание:</label>
-                <textarea id="description" name="description" maxlength="500"><?php if (isset($current)){echo($current[7]);}?></textarea>
+                <textarea id="description" name="description" maxlength="500"><?php if (isset($main)){echo($main[7]);}?></textarea>
 
                 <label for="cover">Обложка книги (jpg, до 3 МБ):</label>
                 <input type="file" id="cover" name="cover" accept="image/jpeg">
 
                 <label for="page-number">Номер страницы:</label>
-                <input type="number" id="page-number" name="page" min="1" required value="<?php if (isset($current)){echo($current[4]);}?>">
+                <input type="number" id="page-number" name="page" min="1" required value="<?php if (isset($main)){echo($main[4]);}?>">
 
                 <button type="submit">Сохранить</button>
             </form>
@@ -197,20 +203,20 @@ else{
         <div id="book-view" class="section" style="display: none;">
             <h2>Просмотр книги</h2>
             <?php 
-            if (isset($current)){
-                echo('<h3>'.$current[2].'</h3>');
-                echo('<p>Автор: '.$current[3].'</p>');
-                echo('<p> Год издания: '.$current[5].'</p>');
-                if ($current[8] == 'fiction'){
+            if (isset($main)){
+                echo('<h3>'.$main[2].'</h3>');
+                echo('<p>Автор: '.$main[3].'</p>');
+                echo('<p> Год издания: '.$main[5].'</p>');
+                if ($main[8] == 'fiction'){
                     echo('<p>Жанр: Фантастика</p>');
-                }else if ($current[8] == 'non-fiction'){
+                }else if ($main[8] == 'non-fiction'){
                     echo('<p>Жанр: Нон-фикшн</p>');
-                }else if ($current[8] == 'mystery'){
+                }else if ($main[8] == 'mystery'){
                     echo('<p>Жанр: Детектив</p>');
                 }
-                echo('<p>Описание книги: '.$current[7].'</p>');
-                echo('<p><img src="../php/img.php" alt="Обложка книги"></p>');
-                echo('<p>Номер страницы: <span id="current-page">'.$current[4].'</span></p>');
+                echo('<p>Описание книги: '.$main[7].'</p>');
+                echo('<p><img src="../php/img.php?id='.$current[0].'" alt="Обложка книги"></p>');
+                echo('<p>Номер страницы: <span id="current-page">'.$main[4].'</span></p>');
             }else{
                 echo('<h3>Название книги</h3>');
                 echo('<p>Автор: Автор книги</p>');
@@ -251,6 +257,14 @@ else{
         function logout(){
             window.location.href = '../php/logout.php';
         }
+
+        <?php 
+        if (isset($_SESSION['edit']) and $_SESSION['edit'] == 1){
+            echo('edit_book1()');
+        }else if (isset($_SESSION['see']) and $_SESSION['see'] == 1){
+            echo('see_book1()');
+        }
+        ?>
     </script>
 
 </body>

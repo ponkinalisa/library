@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
             if (password_verify($password, $res['password'])){
                 $_SESSION['id'] = $res['id'];
                 $_SESSION['book'] = 0;
+                $_SESSION['book_current_id'] = 0;
                 header('Location: main_page.php');
             }
             else{

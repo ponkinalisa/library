@@ -33,6 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
             $stmt = $pdo->prepare($sql);
             $stmt->execute(['user_id'=> $_SESSION['id'], 'name'=>$title, 'author'=>$author, 'count_pages'=>$page, 'year'=>$year, 'description' => $description, 'path_to_img'=>$path, 'genre'=>$genre]);
             $stmt->fetch();
+            $_SESSION['edit'] = 0;
+            $_SESSION['see'] = 0;
             header('Location: ../pages/main_page.php');
 
         } catch (PDOException $e) {

@@ -7,7 +7,6 @@ if (!isset($_SESSION['id'])){
 }
 else{
     include('../php/config.php');
-
     $sql = 'SELECT * FROM books WHERE user_id = :id';
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['id'=> $_SESSION['id']]);

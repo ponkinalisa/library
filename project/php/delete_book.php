@@ -8,7 +8,6 @@ if (!empty($_GET) and isset($_GET['id'])){
     $img = $stmt->fetch(PDO::FETCH_ASSOC)['path_to_img'];
     unlink($img);
 
-
     $sql = 'DELETE FROM books WHERE id = :id';
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['id'=> $_GET['id']]);

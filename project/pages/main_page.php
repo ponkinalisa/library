@@ -1,7 +1,6 @@
 <?php 
 session_start();
 
-
 if (!isset($_SESSION['id'])){
     header('Location: registr.php');
 }
@@ -15,7 +14,7 @@ else{
     if ($count >= count($result)){
         $count = 0;
     }else if ($count < 0){
-        $count = count($result) - 5;
+        $count = (int)(count($result) / 5) * 5;
     }
     $_SESSION['book'] = $count;
     if (count($result) > 0){
@@ -214,7 +213,7 @@ else{
                     echo('<p>Жанр: Детектив</p>');
                 }
                 echo('<p>Описание книги: '.$main[7].'</p>');
-                echo('<p><img src="../php/img.php?id='.$current[0].'" alt="Обложка книги"></p>');
+                echo('<p><img src="../php/img.php?id='.$main[0].'" alt="Обложка книги"></p>');
                 echo('<p>Номер страницы: <span id="current-page">'.$main[4].'</span></p>');
             }else{
                 echo('<h3>Название книги</h3>');
